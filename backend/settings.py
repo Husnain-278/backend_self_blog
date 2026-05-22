@@ -12,20 +12,24 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env at project root
+load_dotenv(str(BASE_DIR / '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gzm98gr(l&s0vd&4ru*ak8pls&251#40idz0x-&hbum6-mqt&i'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-replaceme')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -50,15 +54,15 @@ INSTALLED_APPS = [
 import cloudinary
 
 cloudinary.config(
-    cloud_name="dtxh9hjpd",
-    api_key="689746391593673",
-    api_secret="W4DXthKN65cbhFKarP7tlns1AsA",
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
 )
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dtxh9hjpd',
-    'API_KEY':    '689746391593673',
-    'API_SECRET': 'W4DXthKN65cbhFKarP7tlns1AsA'
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY':    os.environ.get('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -78,6 +82,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -111,15 +118,15 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),   # short-lived
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),   # short-lived
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # long-lived
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
